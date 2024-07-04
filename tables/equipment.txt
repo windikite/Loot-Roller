@@ -1,0 +1,5 @@
+name: stone of sending, cost: 150, type: held
+name: wand of fireballs, cost: 3000, type: wand
+name: potion of healing, cost: 50, type: consumable
+name: veil of cinders, cost: 150000, type: armor
+name: bag of holding, cost: 2000, type: held
