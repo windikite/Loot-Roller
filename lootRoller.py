@@ -12,16 +12,24 @@ def backupFile(path):
     index = path.index(".")
     extension = path[index:]
     file_name = path[:index]
-    path_to_save = "./backups/" + file_name
-    old_path = "./tables/" + file_name
+    path_to_save = f"./backups/{file_name}"
+    old_path = f"./tables/{file_name}{extension}"
+    print(path_to_save, old_path)
+    if os.path.exists("./backups/") == False:
+        os.mkdir("./backups/")
     if os.path.exists(path_to_save) == False:
         os.mkdir(path_to_save)
+    print(os.path.exists(path_to_save))
+    print(os.path.exists(old_path))
     try:
         if os.path.exists(path_to_save) and os.path.exists(old_path):
             now = datetime.datetime.now()
             new_path = path_to_save + "/" + file_name + str(now.year) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + extension
             print("new path", new_path)
             os.rename(old_path, new_path)
+        else:
+            print("Unable to backup!")
+            return -1
     except FileNotFoundError:
         print("File not found!")
         return -1
