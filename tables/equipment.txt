@@ -1,15 +1,12 @@
-name: stone of sending, cost: 150, type: wondrous item
-name: wand of fireballs, cost: 3000, type: wand
-
-name: veil of cinders, cost: 150000, type: armor
-name: bag of holding, cost: 2000, type: wondrous item
 name: bow of arcane might, cost: 6000, type: weapon
-name: ring of lockpicking, cost: 7700, type: ring
-name: rod of construct control, cost: 68850, type: rod
-name: everfull mug, cost: 800, type: wondrous item
 name: shield of stonecunning, cost: 8000, type: shield
-
-Potions------
+name: veil of cinders, cost: 150000, type: armor
+name: stone of sending, cost: 150, type: wondrous item
+name: bag of holding, cost: 2000, type: wondrous item
+name: everfull mug, cost: 800, type: wondrous item
+name: wand of fireballs, cost: 3000, type: wand
+name: rod of construct control, cost: 68850, type: rod
+name: ring of lockpicking, cost: 7700, type: ring
 name: potion of cure light wounds, cost: 50, type: potion
 name: potion of endure elements, cost: 50, type: potion
 name: potion of magic armor, cost: 50, type: potion
@@ -17,8 +14,6 @@ name: potion of bless weapon, cost: 100, type: potion
 name: potion of enlarge person, cost: 250, type: potion
 name: potion of cure moderate wounds, cost: 300, type: potion
 name: potion of lesser restoration, cost: 300, type: potion
-
-Dummy items-----
 name: dummy600, cost: 600, type: dummy
 name: dummy3300, cost: 3300, type: dummy
 name: dummy4700, cost: 4700, type: dummy

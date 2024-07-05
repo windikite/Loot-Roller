@@ -86,7 +86,11 @@ def backupFile(path):
     extension = path[index:]
     file_name = path[:index]
     path_to_save = f"./backups/{file_name}"
-    old_path = f"./tables/{file_name}{extension}"
+    old_path = ""
+    if file_name == "loot":
+        old_path = f"{file_name}{extension}"
+    else:
+        f"./tables/{file_name}{extension}"
     if os.path.exists("./backups/") == False:
         os.mkdir("./backups/")
     if os.path.exists(path_to_save) == False:
@@ -168,14 +172,18 @@ def exportItemsToFile(source, name):
     # except Exception as e:
     #     print("Error!", e)
     else:	
-        table_path = "./tables/" + name
+        path = ""
+        if name == "loot.txt":
+            path = name
+        else:
+            path = "./tables/" + name
         if backup != -1:
-            with open(table_path, 'w') as file:
+            with open(path, 'w') as file:
                 file.write(string_to_write)
-            printSuccess(f"Saved {table_path}!")
+            printSuccess(f"Saved {path}!")
             return 1
         else:
-            printCritical(f"Failed to backup previous file at {table_path} so prevented overwrite")
+            printCritical(f"Failed to backup previous file at {path} so prevented overwrite")
             return -1
         
 
@@ -186,14 +194,15 @@ def rollRandom(source, number):
     all_items = source.items()
     # print("all items", all_items)
     rolled = []
-    while len(rolled) < number:
-        rolled_number = random.randrange(0, len(all_items)-1)
-        for index, value in enumerate(all_items):
-            if index == rolled_number:
-                rolled.append(value)
-                # print(f"Rolled a {value}!")
-            else:
-                printCritical("Roll was out of bounds!")
+    while len(rolled) < number and len(all_items) > 0:
+        rolled_number = random.randint(1, len(all_items)) if len(all_items) > 0 else None
+        if type(rolled_number) == int:
+            for index, value in enumerate(all_items):
+                if index == rolled_number-1:
+                    rolled.append(value)
+                    # print(f"Rolled a {value}!")
+        else:
+            print("Rolled type is not number!")
     if len(rolled) == number:
         printSuccess(f"Rolled all items!")
         return rolled
@@ -204,22 +213,38 @@ def rollRandom(source, number):
         printCritical("Failed to roll any items...")
         return None
     
-def rollValue(source, target_value):
+def rollValue(source, target_value, mode):
+    min_value = target_value*.2
+    max_value = target_value*.8
     current_value = 0.0
-    floored_items = filterDict(source, "cost", target_value*0.3, "greater")
-    filtered_items = filterDict(floored_items, "cost", target_value*1.3, "less").items()
+    if mode == "more":
+        min_value = target_value*.2
+        max_value = target_value*.8
+    elif mode == "fewer":
+        min_value = target_value*.5
+        max_value = target_value*.9
+    elif mode == "least":
+        min_value = target_value*.7
+        max_value = target_value*1.1
     rolled = []
-    while current_value < target_value and len(filtered_items) > 1:
-        rolled_number = random.randrange(0, len(filtered_items)-1) if len(filtered_items) > 0 else None
-        if rolled_number != None:
+    floored_items = filterDict(source, "cost", min_value, "greater")
+    filtered_items = filterDict(floored_items, "cost", max_value, "less").items()
+    while current_value < target_value and len(filtered_items) > 0:
+        rolled_number = random.randint(1, len(filtered_items)) if len(filtered_items) > 0 else None
+        if type(rolled_number) == int:
             for index, value in enumerate(filtered_items):
-                if index == rolled_number:
+                if index == rolled_number-1:
                     rolled.append(value)
                     current_value = current_value + float(dict(value[1])["cost"])
-                    floored_items = filterDict(source, "cost", (target_value-current_value)*0.3, "greater")
-                    filtered_items = filterDict(floored_items, "cost", (target_value-current_value)*1.3, "less").items()
+                    min_value = min_value*.8
+                    max_value = max_value*.8
+                    floored_items = filterDict(source, "cost", min_value, "greater")
+                    filtered_items = filterDict(floored_items, "cost", max_value, "less").items()
+        else:
+            min_value = min_value*.25
+            max_value = max_value*.9
     if len(rolled) >= 0:
-        printSuccess(f"Rolled items worth {current_value}!")
+        printSuccess(f"{len(rolled)} rolled items worth {current_value}!")
         return rolled
     else:
         printCritical("Failed to roll any items...")
@@ -257,12 +282,47 @@ def createItem(old_dict):
     new_dict[str(datetime.datetime.now().microsecond)] = created_item
     return new_dict
 
+def mainLoop():
+    while True:
+        user_input = askMenu(["Roll loot", "View all items", "Backup Files"], "Please choose an option: ")
+        try:
+            user_input = int(user_input)
+            if user_input == 0:
+                user_input = int(askMenu(["Roll random loot", "Roll a target value"], "Please choose an option: "))
+                if user_input == 0:
+                    target_number = int(input("Please input a number of items to roll: "))
+                    horde = rollRandom(equipment | craftingMaterials, target_number)
+                    user_input = int(askMenu(["Yes", "No"], "Export to file? : "))
+                    if user_input == 0:
+                        exportItemsToFile(horde, "loot.txt")
+                    elif user_input == 1:
+                        printWorking("Returning to menu...")
+                elif user_input == 1:
+                    target_value = float(input("Please input a target value in gold: "))
+                    mode = int(askMenu(["More items to reach target", "Fewer items to reach target", "Least items to reach target"], "Please choose an option: "))
+                    horde = rollValue(equipment | craftingMaterials, target_value, mode)
+                    user_input = int(askMenu(["Yes", "No"], "Export to file? : "))
+                    if user_input == 0:
+                        exportItemsToFile(horde, "loot.txt")
+                    elif user_input == 1:
+                        printWorking("Returning to menu...")
+            elif user_input == 1:
+                pass
+            elif user_input == 2:
+                exportItemsToFile(equipment, "equipment.txt")
+                exportItemsToFile(craftingMaterials, "craftingMaterials.txt")
+                exportItemsToFile(terrain, "terrain.txt")
+        except Exception as e:
+            printCritical(e)
+        else:
+            printSuccess("Done!")
+
 equipment = importToDict("./tables/equipment.txt", ["name", "cost", "type"])
-# print(equipment)
+craftingMaterials = importToDict("./tables/craftingMaterials.txt", ["name", "cost", "type", "weight"])
 terrain = importToDict("./tables/terrain.txt", ["name", "description"])
 wondrous_items = filterDict(equipment, "type", "wondrous", "equal")
-print("here is a list of all wondrous items: ", wondrous_items)
-print("here is a list of all armor: ", filterDict(equipment, "type", "armor", "equal"))
+# print("here is a list of all wondrous items: ", wondrous_items)
+# print("here is a list of all armor: ", filterDict(equipment, "type", "armor", "equal"))
 # rollRandom(equipment, 4)
 # equipment = createItem(equipment)
 
@@ -271,4 +331,13 @@ print("here is a list of all armor: ", filterDict(equipment, "type", "armor", "e
 # exportItemsToFile(rollRandom(equipment, 4), "loot.txt")
 # print(rollValue(equipment, 5000))
 # print(rollValue(equipment, 4000))
-exportItemsToFile(rollValue(equipment, 12000), "loot.txt")
+# rollValue(equipment | craftingMaterials, 4600, "more")
+# rollValue(equipment | craftingMaterials, 4600, "fewer")
+# rollValue(equipment | craftingMaterials, 4600, "least")
+# exportItemsToFile(rollValue(equipment, 625), "loot.txt")
+# exportItemsToFile(rollValue(equipment | craftingMaterials, 4600, "more"), "loot.txt")
+# exportItemsToFile(rollValue(equipment | craftingMaterials, 4600, "fewer"), "loot.txt")
+# exportItemsToFile(rollValue(equipment | craftingMaterials, 4600, "least"), "loot.txt")
+# exportItemsToFile(rollValue(craftingMaterials, 500, 0, 400), "loot.txt")
+
+mainLoop()

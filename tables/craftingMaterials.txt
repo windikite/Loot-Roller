@@ -1,0 +1,17 @@
+name: Iron Ingot, type: material, weight: 1
+name: Bundle of Iron Ingots, cost: 1, type: material, weight: 3
+name: Steel Ingot, cost: 1, type: material, weight: 1
+name: Bundle of Steel Ingots, cost: 3, type: material, weight: 3
+name: Silver Ingot, cost: 5, type: material, weight: 1
+name: Bundle of Silver Ingots, cost: 16, type: material, weight: 3
+name: Gold Ingot, cost: 55, type: material, weight: 1
+name: Bundle of Gold Ingots, cost: 165, type: material, weight: 3
+name: Adamantine Ingot, cost: 200, type: material, weight: 1
+name: Bundle of Adamantine Ingots, cost: 600, type: material, weight: 3
+name: Platinum Ingot, cost: 550, type: material, weight: 1
+name: Mithral Ingot, cost: 1100, type: material, weight: 1
+name: Shifting Lumber, cost: 500, type: material, weight: 1
+name: Ageless Lumber, cost: 250, type: material, weight: 1
+name: Cursed Lumber, cost: 80, type: material, weight: 1
+name: Bewitched Lumber, cost: 130, type: material, weight: 1
+name: Bloodthirsty Lumber, cost: 250, type: material, weight: 1
