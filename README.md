@@ -7,13 +7,11 @@ Features I'm considering:
     2. Generating contextualized hordes based on specific keywords  
     3. Possibly using monster subtypes as keywords with which to generate appropriate loot  
     4. Generating terrain and points of interest for a hex map, starting either in an arbitrary corner or spiraling out from a center point  
-    5. Have CLI to interact with as it prompts you for input  
+    5. ~~Have CLI to interact with as it prompts you for input~~
 
-As of now, just running the program will demo the functions I already have in decent shape. As of now it will:  
-    1. Import the equipment and terrain tables from the table folder  
-    2. Print out some filtered tables (only consumables for example)  
-    3. Do some random rolls for a couple tables  
-    4. Export the equipment, terrain and loot tables, and back up the old versions.  
-
-You can also edit it and just mess with the commands at the bottom to try out different filters and rolls.  
+As of now, just running the program will provide a CLI for you to interact with in the terminal. As of now it will:  
+    1. Import tables from the table folder to roll off of 
+    2. Prompt you to either roll items, view items (not working yet) or backup files  
+    3. Prompt you to save your loot to a txt file if you roll a loot horde   
+  
 Also, the tables are completely editable as long as you use the right format, and if you want you can use the createItem function in the terminal to make some as well.
