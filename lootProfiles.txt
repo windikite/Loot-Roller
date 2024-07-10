@@ -1,0 +1,6 @@
+name: Jackpot, loot_value_multiplier: 2, loot_quantity: more
+name: Treasure Trove, loot_value_multiplier: 1.5, loot_quantity: more
+name: Pile of Plunder, loot_value_multiplier: 1, loot_quantity: more
+name: Pile of Spoiled Spoils, loot_value_multiplier: 0.75, loot_quantity: more
+name: Pile of Scraps, loot_value_multiplier: 0.5, loot_quantity: more
+name: Stolen Horde, loot_value_multiplier: 0.05, loot_quantity: more

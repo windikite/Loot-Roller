@@ -1,22 +1,24 @@
-name: bow of arcane might, cost: 6000, type: weapon
-name: shield of stonecunning, cost: 8000, type: shield
-name: veil of cinders, cost: 150000, type: armor
-name: stone of sending, cost: 150, type: wondrous item
-name: bag of holding, cost: 2000, type: wondrous item
-name: everfull mug, cost: 800, type: wondrous item
-name: wand of fireballs, cost: 3000, type: wand
-name: rod of construct control, cost: 68850, type: rod
-name: ring of lockpicking, cost: 7700, type: ring
-name: potion of cure light wounds, cost: 50, type: potion
-name: potion of endure elements, cost: 50, type: potion
-name: potion of magic armor, cost: 50, type: potion
-name: potion of bless weapon, cost: 100, type: potion
-name: potion of enlarge person, cost: 250, type: potion
-name: potion of cure moderate wounds, cost: 300, type: potion
-name: potion of lesser restoration, cost: 300, type: potion
-name: dummy600, cost: 600, type: dummy
-name: dummy3300, cost: 3300, type: dummy
-name: dummy4700, cost: 4700, type: dummy
-name: dummy2500, cost: 2500, type: dummy
-name: dummy6500, cost: 6500, type: dummy
-name: dummy9300, cost: 9300, type: dummy
+name: bow of arcane might, type: weapon, cost: 6000
+name: shield of stonecunning, type: shield, cost: 8000
+name: veil of cinders, type: armor, cost: 150000
+name: stone of sending, type: wondrous item, cost: 150
+name: bag of holding, type: wondrous item, cost: 2000
+name: everfull mug, type: wondrous item, cost: 800
+name: wand of fireballs, type: wand, cost: 3000
+name: rod of construct control, type: rod, cost: 68850
+name: ring of lockpicking, type: ring, cost: 7700
+name: potion of cure light wounds, type: potion, cost: 50
+name: potion of endure elements, type: potion, cost: 50
+name: potion of magic armor, type: potion, cost: 50
+name: potion of bless weapon, type: potion, cost: 100
+name: potion of enlarge person, type: potion, cost: 250
+name: potion of cure moderate wounds, type: potion, cost: 300
+name: potion of lesser restoration, type: potion, cost: 300
+name: dummy600, type: dummy, cost: 600
+name: dummy3300, type: dummy, cost: 3300
+name: dummy4700, type: dummy, cost: 4700
+name: dummy2500, type: dummy, cost: 2500
+name: dummy6500, type: dummy, cost: 6500
+name: dummy9300, type: dummy, cost: 9300
+name: dummyundefined, type: dummy, cost: undefined
+name: gold coin, cost: 1.0, type: currency
