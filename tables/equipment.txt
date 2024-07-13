@@ -14,11 +14,25 @@ name: potion of bless weapon, type: potion, cost: 100
 name: potion of enlarge person, type: potion, cost: 250
 name: potion of cure moderate wounds, type: potion, cost: 300
 name: potion of lesser restoration, type: potion, cost: 300
-name: dummy600, type: dummy, cost: 600
-name: dummy3300, type: dummy, cost: 3300
-name: dummy4700, type: dummy, cost: 4700
-name: dummy2500, type: dummy, cost: 2500
-name: dummy6500, type: dummy, cost: 6500
-name: dummy9300, type: dummy, cost: 9300
 name: dummyundefined, type: dummy, cost: undefined
-name: gold coin, cost: 1.0, type: currency
+name: gold coin, type: currency, cost: 1.0
+name: Sword of Fire, cost: 1000, type: weapon
+name: Bow of Wind, cost: 1500, type: weapon
+name: Shield of Death, cost: 2000, type: weapon
+name: Runebite Staff, cost: 2500, type: weapon
+name: Headsman's Axe, cost: 3000, type: weapon
+name: Regenerating Bomb, cost: 3500, type: weapon
+name: Thundercalling Rod, cost: 4000, type: weapon
+name: Abyssal Anchor, cost: 4500, type: weapon
+name: Dark Plasma, cost: 5000, type: weapon
+name: Runic Bones, cost: 5500, type: weapon
+name: Rapier of the Rine, cost: 1000, type: weapon
+name: Verdant Chakrams, cost: 1500, type: weapon
+name: Voltaic Grappling Claw, cost: 2000, type: weapon
+name: Bag of Holding, cost: 2500, type: weapon
+name: Dragoon Spear, cost: 3000, type: weapon
+name: Unholy Athame, cost: 3500, type: weapon
+name: Mutagenic Grimoire, cost: 4000, type: weapon
+name: Kraken's Eye, cost: 4500, type: weapon
+name: Heavenly Ichor, cost: 5000, type: weapon
+name: Prime Material, cost: 5500, type: weapon

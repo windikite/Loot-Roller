@@ -90,22 +90,26 @@ def backupFile(old_path):
     extension = file_path[dot_index:]
     file_name = file_path[:dot_index]
     path_to_save_to = f"./backups/{file_name}"
-    print(file_path, file_name, path_to_save_to, os.path.exists(old_path))
+    # print(file_path, file_name, path_to_save_to, os.path.exists(path_to_save_to))
     if os.path.exists("./backups/") == False:
         os.mkdir("./backups/")
     if os.path.exists(path_to_save_to) == False:
         os.mkdir(path_to_save_to)
     try:
-        if os.path.exists(path_to_save_to) and os.path.exists(old_path):
-            now = datetime.datetime.now()
-            new_path = path_to_save_to + "/" + file_name + str(now.year) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + extension
-            os.rename(old_path, new_path)
+        if os.path.exists(old_path):
+            if os.path.exists(path_to_save_to):
+                now = datetime.datetime.now()
+                new_path = path_to_save_to + "/" + file_name + str(now.year) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + extension
+                os.rename(old_path, new_path)
+            else:
+                printCritical("Unable to backup!")
+                return -1
         else:
-            printCritical("Unable to backup!")
-            return -1
+            print("File to backup does not exist!")
+            return 1
     except FileNotFoundError:
         printCritical("File not found!")
-        return -1
+        return -2
     else:
         return 1    
     
@@ -119,7 +123,7 @@ def importToDict(path, fields):
             anti_overwrite_counter = 0#this is the best way I found to modify the id so that they wouldn't overwrite eachother, as I don't want to wait for a name field to come up for each line and then append that instead
             for line in lines:
                 item = {}
-                id = str(datetime.datetime.now().microsecond) + str(anti_overwrite_counter)
+                id = generateUniqueID(str(anti_overwrite_counter))
                 anti_overwrite_counter += 1
                 # print(id)
                 for field in fields:
@@ -151,9 +155,29 @@ def importToDict(path, fields):
     else:
         return items
 
-def exportItemsToFile(source, export_path):
+def writeStringsToFile(source, export_path, method):
     try:
         backup = backupFile(export_path)
+        string_to_write = ("\n").join(source)
+    except FileNotFoundError:
+        printCritical("File not found!")
+    except Exception as e:
+        print("Error!", e)
+    else:	
+        if backup != -1:
+            if string_to_write != -1:
+                with open(export_path, method) as file:
+                    file.write(string_to_write)
+                printSuccess(f"Saved {export_path}!")
+                return 1
+            else:
+                print("No string to write!")
+        else:
+            printCritical(f"Failed to backup previous file at {export_path} so prevented overwrite")
+            return -1
+
+def compileToString(source):
+    try:
         strings = []
         if isinstance(source, dict):
             first_layer = source.values()
@@ -174,16 +198,31 @@ def exportItemsToFile(source, export_path):
         else:
             printCritical("Unknown data type!")
         string_to_write = "\n".join(strings)
+    except Exception as e:
+        print("Error!", e)
+    else:	
+        if string_to_write != "":
+            return string_to_write
+        else:
+            printCritical(f"Failed to compile data to writable string")
+            return -1
+        
+def exportItemsToFile(source, export_path):
+    try:
+        backup = backupFile(export_path)
+        string_to_write = compileToString(source)
     except FileNotFoundError:
         printCritical("File not found!")
     except Exception as e:
         print("Error!", e)
     else:	
-        if backup != -1:
+        if backup != -1 and string_to_write != -1:
             with open(export_path, 'w') as file:
                 file.write(string_to_write)
             printSuccess(f"Saved {export_path}!")
             return 1
+        elif backup != -1 and string_to_write == -1:
+            print()
         else:
             printCritical(f"Failed to backup previous file at {export_path} so prevented overwrite")
             return -1
@@ -230,7 +269,7 @@ def createEntry(old_dict, fields):
             print(f"That wasn't a {field_type}! Please retry!")
         else:
             new_entry.setdefault(field_name, user_input)
-    new_dict[str(datetime.datetime.now().microsecond)] = new_entry
+    new_dict[generateUniqueID()] = new_entry
     return new_dict
 
 def deleteEntry(old_dict, entry):
@@ -282,6 +321,14 @@ def displayEntries(source, text):
                 field_list.append(str(f"{str(field[0]).upper()}: {field[1]}"))
             separator = " | "
             entry_list.append(separator.join(field_list)) 
+    if isinstance(source, list) == True:
+        for entry in source_dict:
+            field_list = []
+            field_list.append(f"ID: {entry[0]}")
+            for field in entry[1].items():
+                field_list.append(str(f"{str(field[0]).upper()}: {field[1]}"))
+            separator = " | "
+            entry_list.append(separator.join(field_list)) 
     if len(entry_list) >= 1:
         separator = "\n"
         string = separator.join(entry_list)
@@ -289,3 +336,11 @@ def displayEntries(source, text):
         string = "None found!"
     printSuccess(text)
     printWorking(string)
+    
+def generateUniqueID(prefix=False):
+    if prefix != False:
+        string = str(prefix) + str(datetime.datetime.now().microsecond)
+        return str(string)
+    else:
+        return str(datetime.datetime.now().microsecond)
+    

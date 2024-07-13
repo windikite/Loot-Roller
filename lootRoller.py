@@ -1,6 +1,63 @@
 import random
 from functions import *
 
+class horde:
+    def __init__(self, id):
+        self.id = id
+        self.items = []
+        self.totalValue = 0
+        self.hordeType = ""
+        
+    def generateHorde(self, source, loot_profile, target_value):
+        self.hordeType = loot_profile
+        horde = rollHorde(source, self.hordeType, target_value)
+        if horde != None:
+            self.items = [item for item in horde]
+            self.items.sort()
+            self.totalValue = 0
+            for item in self.items:
+                self.totalValue = self.totalValue + item[1].get("cost") 
+            # print(f"Rolled {len(self.items)} items worth {self.totalValue}")
+        else:
+            print("Failed to generate horde")
+        
+    def info(self):
+        hordeName = self.hordeType.get("name")
+        displayEntries(self.items, f"This {hordeName} horde has {len(self.items)} items in it worth a total of {self.totalValue}g.")
+
+def printHordes(hordes):
+    for horde in hordes.items():
+        horde[1].info()
+        
+def createHordes(source, loot_profiles, number):
+    print(loot_profiles.items())
+    counter = 0
+    hordes = {}
+    while counter < number:
+        mode = int(askMenu([loot_profiles[profile]["name"] for profile in loot_profiles], "Please choose a horde type: "))
+        target_value = int(input("Please enter a target value for the horde: "))
+        new_horde = horde(generateUniqueID("horde"))
+        new_horde.generateHorde(source, list(loot_profiles.items())[mode][1], target_value)
+        hordes.update({new_horde.id: new_horde})
+        counter += 1
+    if len(hordes.items()) > 0:
+        return hordes
+    else:
+        return -1
+
+def exportHordesToFile(hordes, export_path):
+    stringList = []
+    counter = 0
+    for horde in hordes.items():
+        horde_title = "Horde " + str(counter+1)
+        stringList.append(f"{horde_title}: A {horde[1].hordeType.get("name")} worth {horde[1].totalValue}")
+        for item in horde[1].items:
+            stringList.append(f"{item[1].get("name")} - {item[1].get("cost")}")
+        stringList.append("-------------")
+        counter += 1
+    print(stringList)
+    writeStringsToFile(stringList, export_path, "w")
+
 def rollSetNumberOfLoot(source, number):
     all_items = source.items()
     # print("all items", all_items)
@@ -55,7 +112,7 @@ def rollTargetLootValue(source, target_value, mode):
                         filtered_items = filterDict(floored_items, "cost", max_value, "less").items()
                         failed_attemps = 0
         elif len(filtered_items) == 1:
-            rolled.append(filtered_items[0])
+            rolled.append(list(filtered_items)[0])
             min_value = min_value*.5
             max_value = max_value*.8
             floored_items = filterDict(source, "cost", min_value, "greater")
@@ -68,8 +125,8 @@ def rollTargetLootValue(source, target_value, mode):
             filtered_items = filterDict(floored_items, "cost", max_value, "less").items()
         failed_attemps += 1
     if len(rolled) > 0:
-        printSuccess(f"{len(rolled)} rolled items worth {current_value}!")
-        return dict(rolled)
+        # printSuccess(f"{len(rolled)} rolled items worth {current_value}!")
+        return rolled
     else:
         printCritical("Failed to roll any items...")
         return None
@@ -79,27 +136,37 @@ def rollHorde(source, horde_type, target_value):
     horde_modifier = horde_type.get("loot_value_multiplier")
     horde_quantity = horde_type.get("loot_quantity")
     horde_value = float(target_value)*float(horde_modifier)
-    print(target_value, horde_modifier, horde_value)
+    # print(target_value, horde_modifier, horde_value)
     possible_loot = source
     if possible_loot != -1:
         loot_horde = rollTargetLootValue(filterDict(possible_loot, "cost", horde_value, "less"), horde_value, horde_quantity)
         if loot_horde != -1:
-            print(f"Attempted to roll a {horde_name} worth {horde_value}g! Rolled the following items: \n{loot_horde}")
+            # print(f"Attempted to roll a {horde_name} worth {horde_value}g! Rolled the following items: \n{loot_horde}")
             return loot_horde
         else:
             print(f"Attempted to roll a {horde_name} worth {horde_value}g! There were no items with that search criteria to roll for.")
             return -1
     elif possible_loot == -1:
         print(f"Attempted to roll a {horde_name} worth {horde_value}g! There were no items with that search criteria to roll for.")
+        return -1
     print("--------------")
 
 def mainLoop():
+    # backup management
+    backup_location = "./backups"
+    # loot management
+    loot_file_location = "./loot.txt"
+    # equipment management
+    equipment_file_location = "./tables/equipment.txt"
     equipment_fields = ["name", "type", "cost"]
+    equipment = importToDict(equipment_file_location, equipment_fields)
+    # material management
+    material_file_location = "./tables/craftingMaterials.txt"
+    material_fields = ["name", "cost", "type", "weight"]
+    craftingMaterials = importToDict(material_file_location, material_fields)
+    # loot profiles for horde generation managment
     loot_profile_fields = ["name", "loot_value_multiplier", "loot_quantity"]
-    equipment = importToDict("./tables/equipment.txt", equipment_fields)
     loot_profiles = importToDict("./lootProfiles.txt", loot_profile_fields)
-    print(loot_profiles)
-    craftingMaterials = importToDict("./tables/craftingMaterials.txt", ["name", "cost", "type", "weight"])
     while True:
         user_input = askMenu([
                 "Create new item", 
@@ -157,7 +224,7 @@ def mainLoop():
                     horde = rollSetNumberOfLoot(equipment | craftingMaterials, target_number)
                     user_input = int(askMenu(["Yes", "No"], "Export to file? : "))
                     if user_input == 0:
-                        exportItemsToFile(horde, "loot.txt")
+                        exportItemsToFile(horde, loot_file_location)
                     elif user_input == 1:
                         printWorking("Returning to menu...")
                 elif user_input == 1:
@@ -166,36 +233,28 @@ def mainLoop():
                     horde = rollTargetLootValue(equipment | craftingMaterials, target_value, mode)
                     user_input = int(askMenu(["Yes", "No"], "Export to file? : "))
                     if user_input == 0:
-                        exportItemsToFile(horde, "loot.txt")
+                        exportItemsToFile(horde, loot_file_location)
                     elif user_input == 1:
                         printWorking("Returning to menu...")
                 elif user_input == 2:
-                    profiles = [f"{loot_profiles[profile]["name"]}" for profile in loot_profiles]
-                    mode = int(askMenu(profiles, "Please choose a horde type: "))
-                    # if isinstance(search_filter[0], list) == True:
-                    #     for search_term in search_filter:
-                    #         key, value, comparator = search_term
-                    #         possible_loot = filterDict(possible_loot, key, value, comparator)
-                    # else:
-                    #     key, value, comparator = search_filter
-                    #     possible_loot = filterDict(possible_loot, key, value, comparator)
-                    # print(list(loot_profiles.items())[mode])
-                    target_value = int(input("Please enter a target value for the horde: "))
-                    horde = rollHorde(equipment, list(loot_profiles.items())[mode][1], target_value)
+                    number = int(input("How many hordes do you want to roll?: "))
+                    hordes = createHordes(equipment, loot_profiles, number)
+                    printHordes(hordes)
                     user_input = int(askMenu(["Yes", "No"], "Export to file? : "))
                     if user_input == 0:
-                        exportItemsToFile(horde, "loot.txt")
+                        exportHordesToFile(hordes, loot_file_location)
                     elif user_input == 1:
                         printWorking("Returning to menu...")
             elif user_input == 6:
                 exportItemsToFile(equipment, "./tables/equipment.txt")
             elif user_input == 7:
-                equipment = importToDict("./equipment.txt", equipment_fields)
+                equipment = importToDict(equipment_file_location, equipment_fields)
             elif user_input == 8:
                 break
         except Exception as e:
             printCritical(e)
         else:
             printSuccess("Done!")
+
 
 mainLoop()
